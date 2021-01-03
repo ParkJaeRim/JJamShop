@@ -1,0 +1,9 @@
+spring: 
+    jpa: 
+        hibernate: 
+            ddl-auto: update 
+    datasource: 
+        url: jdbc:mariadb://localhost:3306/shoppingmall?useUnicode=true&characterEncoding=utf-8 
+        username: root
+        password: 
+        driver-class-name: org.mariadb.jdbc.Driver
