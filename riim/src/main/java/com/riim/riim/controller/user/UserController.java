@@ -8,15 +8,18 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+
+import javax.servlet.http.HttpSession;
 
 import com.riim.riim.dao.UserDao;
-import com.riim.riim.model.User;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @CrossOrigin(origins = { "*" })
@@ -30,10 +33,13 @@ public class UserController {
         return "hi";
     }
 
-    @GetMapping("/Alluser")
-    public String alluser(@RequestParam int uid) {
-        User user = userdao.findNameByUid(uid);
-        return user.getUname();
+    @PostMapping("/join")
+    public String join(HashMap<String, String> userinfo) {
+        String data = userinfo.get("id");
+        System.out.println("HELLO");
+        System.out.println(data);
+
+        return data;
     }
 
     @GetMapping("/hi")
@@ -43,7 +49,23 @@ public class UserController {
 
     // 카카오 인가코드 발급
     @GetMapping("/aa")
-    public String aa(@RequestParam("code") String code) {
+    public String aa(@RequestParam("code") String code, HttpSession session) {
+        String access_Token = getAccessToken(code);
+        HashMap<String, String> userInfo = getUserInfo(access_Token);
+        System.out.println(userInfo);
+
+        // join(userInfo);
+        session.setAttribute("id", userInfo.get("userid"));
+        session.setAttribute("kakao_email", userInfo.get("kakao_email"));
+        // userInfo.get("kakao_email"));
+        if (userdao.findNameByUid(Integer.parseInt(userInfo.get("userid"))) != null) {
+
+        }
+
+        return "join";
+    }
+
+    public String getAccessToken(String code) {
         String access_Token = "";
         String refresh_Token = "";
         String reqURL = "https://kauth.kakao.com/oauth/token";
@@ -68,7 +90,6 @@ public class UserController {
 
             // 결과 코드가 200이라면 성공
             int responseCode = conn.getResponseCode();
-            // System.out.println("responseCode : " + responseCode);
             // 요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line = "";
@@ -76,8 +97,11 @@ public class UserController {
 
             while ((line = br.readLine()) != null) {
                 result += line;
+                System.out.println(line);
             }
-            // System.out.println("response body : " + result);
+            // {"access_token":"","token_type":"bearer","refresh_token":""
+            // ,"expires_in":21599,"scope":"account_email","refresh_token_expires_in":5183999}
+
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObj = (JSONObject) jsonParser.parse(result);
 
@@ -89,4 +113,43 @@ public class UserController {
         }
         return access_Token;
     }
+
+    public HashMap<String, String> getUserInfo(String access_Token) {
+        HashMap<String, String> userInfo = new HashMap<>();
+        String reqURL = "https://kapi.kakao.com/v2/user/me";
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", "Bearer " + access_Token);
+
+            // int responseCode = conn.getResponseCode();
+            // System.out.println("responseCode : " + responseCode);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            String line = "";
+            String result = "";
+
+            while ((line = br.readLine()) != null) {
+                result += line;
+            }
+            // System.out.println("response body : " + result);
+
+            JSONParser jsonParser = new JSONParser();
+
+            JSONObject jsonObj = (JSONObject) jsonParser.parse(result);
+            String userid = jsonObj.get("id").toString();
+
+            JSONObject accountInfo = (JSONObject) jsonObj.get("kakao_account");
+            String kakaoemail = accountInfo.get("email").toString();
+            // {"email_needs_agreement":false,"is_email_valid":true,"is_email_verified":true,"has_email":true,"email":""}
+            userInfo.put("id", userid);
+            userInfo.put("kakao_email", kakaoemail);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return userInfo;
+    }
+
 }
