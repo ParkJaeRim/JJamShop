@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserDao extends JpaRepository<User, String> {
 
-    User findNameByUid(int uid);
+    User findNameByKakaoid(String kakaoid);
 }
