@@ -2,6 +2,8 @@ package com.riim.riim.controller.user;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.web.servlet.view.RedirectView;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
@@ -10,8 +12,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 
-import javax.servlet.http.HttpSession;
-
 import com.riim.riim.dao.UserDao;
 
 import org.json.simple.JSONObject;
@@ -19,7 +19,7 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+
 import org.springframework.web.bind.annotation.RequestParam;
 
 @CrossOrigin(origins = { "*" })
@@ -28,47 +28,33 @@ public class UserController {
     @Autowired
     UserDao userdao;
 
-    @GetMapping("/")
-    public String index() {
-        return "hi";
-    }
-
-    @PostMapping("/join")
-    public String join(HashMap<String, String> userinfo) {
-        String data = userinfo.get("id");
-        System.out.println("HELLO");
-        System.out.println(data);
-
-        return data;
-    }
-
-    @GetMapping("/hi")
-    public String login() {
-        return "https://kauth.kakao.com/oauth/authorize?client_id=d8a07bcf4f4992d4a841f569e9e68f57&redirect_uri=http://localhost:8080/aa&response_type=code";
-    }
-
     // 카카오 인가코드 발급
     @GetMapping("/aa")
-    public String aa(@RequestParam("code") String code, HttpSession session) {
-        String access_Token = getAccessToken(code);
-        HashMap<String, String> userInfo = getUserInfo(access_Token);
-        System.out.println(userInfo);
+    public Object aa(@RequestParam("code") String code) {
+        String[] Token = getAccessToken(code);
+        String access_Token = Token[0];
+        HashMap<String, String> userinfo = getUserInfo(access_Token);
+        String kakao_email = userinfo.get("kakao_email");
+        String kakao_id = userinfo.get("kakao_id");
 
-        // join(userInfo);
-        session.setAttribute("id", userInfo.get("userid"));
-        session.setAttribute("kakao_email", userInfo.get("kakao_email"));
-        // userInfo.get("kakao_email"));
-        if (userdao.findNameByUid(Integer.parseInt(userInfo.get("userid"))) != null) {
+        RedirectView redirectView = new RedirectView();
 
+        if (userdao.findNameByKakaoid(kakao_id) != null) {
+
+        } else {
+
+            redirectView.setUrl("http://localhost:3000/user/join"); // 회원가입 폼으로 이동
+            redirectView.addStaticAttribute("kakao_email", kakao_email);
+            redirectView.addStaticAttribute("kakao_id", kakao_id);
         }
-
-        return "join";
+        return redirectView;
     }
 
-    public String getAccessToken(String code) {
+    public String[] getAccessToken(String code) {
         String access_Token = "";
         String refresh_Token = "";
         String reqURL = "https://kauth.kakao.com/oauth/token";
+        String token[] = new String[2];
 
         try {
             URL url = new URL(reqURL);
@@ -107,11 +93,13 @@ public class UserController {
 
             access_Token = jsonObj.get("access_token").toString();
             refresh_Token = jsonObj.get("refresh_token").toString();
+            token[0] = access_Token;
+            token[1] = refresh_Token;
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return access_Token;
+        return token;
     }
 
     public HashMap<String, String> getUserInfo(String access_Token) {
@@ -144,8 +132,9 @@ public class UserController {
             JSONObject accountInfo = (JSONObject) jsonObj.get("kakao_account");
             String kakaoemail = accountInfo.get("email").toString();
             // {"email_needs_agreement":false,"is_email_valid":true,"is_email_verified":true,"has_email":true,"email":""}
-            userInfo.put("id", userid);
+            userInfo.put("kakao_id", userid);
             userInfo.put("kakao_email", kakaoemail);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
