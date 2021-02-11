@@ -20,7 +20,12 @@ const routes = [
 
     component: () => import('../views/user/Join.vue')
   },
+  {
+    path: '/kakaologin',
+    name: 'klogin',
 
+    component: () => import('../views/user/kakaologin.vue')
+  },
 ]
 
 const router = createRouter({
