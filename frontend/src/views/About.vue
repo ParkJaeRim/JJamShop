@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
+<div class="about">
     <h1>This is hiiiiiiiiiiii about page</h1>
     <button @click="go()">hi</button>
         <button @click="back()">back</button>
@@ -10,7 +10,6 @@
     <br />
   </div>
 </template>
-
 <script>
 import axios from "axios";
 

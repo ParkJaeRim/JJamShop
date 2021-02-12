@@ -25,8 +25,6 @@ public class User {
     private int uid;
 
     private String kakaoid;
-
     private String uname;
     private String email;
-    private String refresh_token;
 }
