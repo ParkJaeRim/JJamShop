@@ -1,6 +1,16 @@
-import { createApp } from 'vue'
+import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import store from './store'
 
-createApp(App).use(router).mount('#app')
-window.Kakao.init('8e2dc4d908bdabe00e13083f978890e1');
+import BootstrapVue from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+Vue.use(BootstrapVue)
+Vue.config.productionTip = false;
+new Vue({
+  router,
+  store,
+  render: h => h(App)
+}).$mount('#app')

@@ -9,7 +9,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -54,7 +53,7 @@ public class KakaoLogin {
             while ((line = br.readLine()) != null) {
                 result += line;
             }
-            System.out.println("=========== \nresponse body : " + result);
+            // System.out.println("=========== \nresponse body : " + result);
 
             // Gson 라이브러리에 포함된 클래스로 JSON파싱 객체 생성
             JsonParser parser = new JsonParser();
@@ -87,7 +86,7 @@ public class KakaoLogin {
             conn.setRequestProperty("Authorization", "Bearer " + access_Token);
 
             int responseCode = conn.getResponseCode();
-            System.out.println("responseCode : " + responseCode);
+            // System.out.println("responseCode : " + responseCode);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
@@ -97,14 +96,14 @@ public class KakaoLogin {
             while ((line = br.readLine()) != null) {
                 result += line;
             }
-            System.out.println("response body : " + result);
+            // System.out.println("response body : " + result);
 
             JsonParser parser = new JsonParser();
             JsonElement element = parser.parse(result);
 
             JsonObject kakao_account = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
             // System.out.println("HI :::: " + properties.toString());
-            System.out.println("HELLO :::: " + kakao_account.toString());
+            // System.out.println("HELLO :::: " + kakao_account.toString());
 
             String id = element.getAsJsonObject().get("id").getAsString();
             String email = null;
