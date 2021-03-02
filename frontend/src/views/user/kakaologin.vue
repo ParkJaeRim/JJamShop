@@ -47,7 +47,7 @@ export default {
     return {
       codes: "",
       form: {
-        kakaoid: "",
+        password: "",
         email: "",
         uname: "",
       },
@@ -59,21 +59,36 @@ export default {
       this.codes = this.$route.query.code;
       this.getToken();
     },
+    login() {
+      axios.post("http://localhost:8080/login", this.form).then((res) => {
+        if (res.data != null) {
+          document.cookie = `accessToken=${res.data}`;
+          axios.defaults.headers.common["x-access-token"] = res.data;
+          this.$router.push("/");
+        }
+      });
+    },
     getToken() {
       axios
         .get("http://localhost:8080/klogin?authorize_code=" + this.codes)
         .then((res) => {
           this.form.email = res.data.email;
-          this.form.kakaoid = res.data.id;
+          this.form.password = res.data.id;
+          if (this.form.password == undefined) {
+            alert("올바르지 못한 접근입니다.");
+            this.$router.push("/");
+          } else {
+            this.login();
+          }
         });
     },
     onSubmit(event) {
       event.preventDefault();
       // alert(JSON.stringify(this.form));
-      axios.post("http://localhost:8080/join",this.form).then((res)=>{
-        console.log(res);
-        this.$router.push("/");
-      })
+      axios.post("http://localhost:8080/join", this.form).then((res) => {
+        console.log(res.status);
+        this.login();
+      });
     },
     onReset(event) {
       event.preventDefault();
