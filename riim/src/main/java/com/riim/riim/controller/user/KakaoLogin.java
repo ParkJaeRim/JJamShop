@@ -43,7 +43,7 @@ public class KakaoLogin {
 
             ///////////////////////
             // 결과 코드가 200이라면 성공
-            int responseCode = conn.getResponseCode();
+            // int responseCode = conn.getResponseCode();
 
             // 요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -85,7 +85,7 @@ public class KakaoLogin {
             // 요청에 필요한 Header에 포함될 내용
             conn.setRequestProperty("Authorization", "Bearer " + access_Token);
 
-            int responseCode = conn.getResponseCode();
+            // int responseCode = conn.getResponseCode();
             // System.out.println("responseCode : " + responseCode);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
