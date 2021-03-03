@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,9 @@ public class UserController {
 
     @Autowired
     JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/")
     public String index() {
@@ -51,7 +55,7 @@ public class UserController {
 
     @PostMapping("/join")
     public void join(@RequestBody User user) {
-        userdao.save(User.builder().email(user.getEmail()).password(user.getPassword()).uname(user.getUname())
+        userdao.save(User.builder().email(user.getEmail()).password(passwordEncoder.encode(user.getPassword())).uname(user.getUname())
                 .roles(Collections.singletonList("USER")).build());
     }
 
@@ -61,7 +65,7 @@ public class UserController {
         User member = userdao.findByEmail(user.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
 
-        if (!user.getPassword().equals(member.getPassword())) {
+        if (!passwordEncoder.matches(user.getPassword(), member.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
 
