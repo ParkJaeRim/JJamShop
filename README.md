@@ -1,7 +1,17 @@
 # JJamShop
 작은 쇼핑몰을 만들어볼 예정입니다
-
+<br>
 <hr>
+<br>
+
+# Git Branch 
+
+21.03.04 형식 정립
+Master브랜치에 <br>
+바로 합치지 않고 Develop(staging)브랜치에 기능들을 Merge할 예정이다.
+<br>
+<hr>
+<br>
 
 # Commit Message 형식
 
