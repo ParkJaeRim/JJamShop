@@ -1,5 +1,7 @@
 <template>
   <div class="klogin">
+    <section class="klogin"></section>
+
     <div class="container d-flex justify-content-center align-items-center">
       <div class="card">
         <div class="row">
@@ -99,6 +101,15 @@ export default {
           document.cookie = `accessToken=${res.data}`;
           axios.defaults.headers.common["x-access-token"] = res.data;
           this.$router.push("/");
+          location.reload();
+        }
+      });
+    },
+    isUser() {
+      axios.post("http://localhost:8080/isUser", this.form).then((res) => {
+        console.log(res);
+        if (res.data == "Exist") {
+          this.login();
         }
       });
     },
@@ -108,14 +119,17 @@ export default {
         .then((res) => {
           this.form.email = res.data.email;
           this.form.password = res.data.id;
+          console.log(this.form);
           if (this.form.password == undefined) {
             alert("올바르지 못한 접근입니다.");
+
             this.$router.push("/");
           } else {
-            this.login();
+            this.isUser();
           }
         });
     },
+
     onSubmit(event) {
       event.preventDefault();
       // alert(JSON.stringify(this.form));
@@ -213,5 +227,7 @@ body {
   border-color: #f50057;
 }
 
-
+.klogin {
+  height: 150px;
+}
 </style>
