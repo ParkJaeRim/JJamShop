@@ -1,6 +1,9 @@
-# JJamShop
-작은 쇼핑몰을 만들어볼 예정입니다
+
+<p align="center"><img src="https://github.com/ParkJaeRim/JJamShop/blob/master/frontend/src/assets/logoAndtext.png" width=150px height=240px></p>
+<p align="center">작은 쇼핑몰을 만들어볼 예정입니다</p>
+
 <br>
+
 <hr>
 <br>
 
@@ -30,3 +33,4 @@ Master브랜치에 <br>
 
 
 [출처](https://velog.io/@hyeong412/TIL-%EC%A2%8B%EC%9D%80-%EC%BB%A4%EB%B0%8B-%EB%A9%94%EC%84%B8%EC%A7%80-%EC%9E%91%EC%84%B1%ED%95%98%EA%B8%B0-)
+1
