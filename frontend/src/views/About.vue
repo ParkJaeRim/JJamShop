@@ -1,5 +1,6 @@
 <template>
   <div class="about">
+    <section class="about"></section>
     <h1>This is hiiiiiii about page</h1>
     <img src="../assets/kakao_login_btn.png" @click="login()" />
     <br />
@@ -18,3 +19,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+.about {
+  height: 150px;
+}
+
+</style>

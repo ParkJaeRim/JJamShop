@@ -9,6 +9,7 @@ import com.riim.riim.model.User;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -70,7 +71,15 @@ public class UserController {
         }
 
         String Token = jwtTokenProvider.createToken(member.getUsername(), member.getRoles());
-        System.out.println(Token);
         return Token;
+    }
+
+    @PostMapping("/isUser")
+    public String isUser(@RequestBody User user){
+        Optional<User> member = userdao.findByEmail(user.getEmail());
+        if(member.isEmpty()){
+            return "NotExist";
+        }else{
+        return "Exist";}
     }
 }
